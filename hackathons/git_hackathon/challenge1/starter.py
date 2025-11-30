@@ -1,4 +1,15 @@
 import sys
+def safe_float(value):
+    """convert string to float
+        returns float value if it's valid, None if not valid
+        """
+    try:
+        num = float(value)
+        if num != num or num in (float("inf"), float("-inf")):
+            return None
+        return num
+    except (ValueError, TypeError):
+        return None
 
 def read_numbers_from_csv(path):
     """Read numeric values from a CSV file (one value per line).
@@ -9,10 +20,11 @@ def read_numbers_from_csv(path):
     with open(path, "r") as f:
         for line in f:
             value = line.strip()
-            # TODO: convert value to float and add to numbers
-            # HINT: you should skip values that cannot be converted
-            numbers.append(value)
+            num = safe_float(value)
+            if num is not None:
+                numbers.append(value)
     return numbers
+
 
 def compute_mean(values):
     """Return the mean of a list of numbers.
@@ -21,16 +33,25 @@ def compute_mean(values):
     """
     total = 0
     for v in values:
-        total = v  # BUG: this is wrong
-    return total
+        total += v
+    return total / len(values) if values else None
 
 def compute_median(values):
     """Return the median of a list of numbers.
 
     BUGS: does not handle even-length lists or empty lists correctly.
     """
-    # TODO: implement proper median
-    return values[0]
+    if not values:
+        return None
+    sorted_values = sorted(values)
+    n = len(sorted_values)
+    mid = n // 2
+
+    if n % 2 == 1:
+        return sorted_values[mid]
+    else:
+        return (sorted_values[mid - 1] + sorted_values[mid]) / 2
+    
 
 def main():
     if len(sys.argv) < 2:
@@ -49,3 +70,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
